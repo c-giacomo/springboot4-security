@@ -1,1 +1,7 @@
-<b>jwt-auth</b>: <span style="font-family: Calibri; font-size: small;">JWT + UserDetailService: Login with Username & Password (Encrypted) and access with oauth2.Jwt token with public and private keys</span>
+<strong>jwt-auth</strong>
+
+<p>
+  JWT authentication with Spring Security's <code>UserDetailsService</code>.
+  Authenticate with a username and password, then access protected endpoints
+  using JWTs signed with a public/private key pair.
+</p>

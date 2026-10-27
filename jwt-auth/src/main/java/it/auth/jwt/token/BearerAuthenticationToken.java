@@ -3,6 +3,7 @@ package it.auth.jwt.token;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.Collection;
@@ -10,30 +11,29 @@ import java.util.Collection;
 /** Bearer token: non autenticato (stringa JWT) -> autenticato (Jwt validato). */
 public final class BearerAuthenticationToken extends AbstractAuthenticationToken {
 
+    private final UserDetails principal;
     private final Jwt jwt;      // null finché non è validato
     private String token;       // credentials
 
-    private BearerAuthenticationToken(String token, Jwt jwt, Collection<? extends GrantedAuthority> authorities) {
+    private BearerAuthenticationToken(String token, UserDetails principal, Jwt jwt, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.token = token;
+        this.principal = principal;
         this.jwt = jwt;
         super.setAuthenticated(jwt != null);
     }
 
     public static BearerAuthenticationToken unauthenticated(String token) {
-        return new BearerAuthenticationToken(token, null, AuthorityUtils.NO_AUTHORITIES);
+        return new BearerAuthenticationToken(token, null, null, AuthorityUtils.NO_AUTHORITIES);
     }
 
-    public static BearerAuthenticationToken authenticated(Jwt jwt, Collection<? extends GrantedAuthority> authorities) {
-        return new BearerAuthenticationToken(null, jwt, authorities);
+    public static BearerAuthenticationToken authenticated(UserDetails principal, Jwt jwt) {
+        return new BearerAuthenticationToken(null, principal, jwt, principal.getAuthorities());
     }
 
-    @Override
-    public Object getPrincipal() { return jwt; }
-    @Override
-    public Object getCredentials() { return token; }
-    @Override
-    public String getName() { return jwt != null ? jwt.getSubject() : ""; }
+    @Override public Object getPrincipal() { return principal; }
+    @Override public Object getCredentials() { return token; }
+    public Jwt getJwt() { return jwt; }
 
     @Override
     public void eraseCredentials() {

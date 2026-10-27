@@ -3,6 +3,7 @@ package it.auth.jwt;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import it.auth.jwt.interfaces.JwtPrincipalResolver;
 import it.auth.jwt.provider.BearerAuthenticationProvider;
 import it.auth.jwt.provider.LoginAuthenticationProvider;
 import it.auth.jwt.service.JwtTokenService;
@@ -36,6 +37,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Clock;
 import java.util.List;
+import java.util.Objects;
 
 @AutoConfiguration
 @ConditionalOnClass(AuthenticationManager.class)
@@ -90,13 +92,20 @@ public class JwtAuthAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
+    JwtPrincipalResolver jwtPrincipalResolver(UserDetailsService userDetailsService) {
+        return jwt -> userDetailsService.loadUserByUsername(Objects.requireNonNull(jwt.getSubject()));
+    }
+
+    @Bean
     @ConditionalOnMissingBean(name = "jwtAuthenticationManager")
     AuthenticationManager jwtAuthenticationManager(UserDetailsService uds,
                                                    PasswordEncoder encoder,
-                                                   JwtDecoder decoder) {
+                                                   JwtDecoder decoder,
+                                                   JwtPrincipalResolver principalResolver) {
         return new ProviderManager(
                 new LoginAuthenticationProvider(uds, encoder),
-                new BearerAuthenticationProvider(decoder));
+                new BearerAuthenticationProvider(decoder, principalResolver));
     }
 
     private static RSAPublicKey readPublicKey(Resource resource) throws IOException {

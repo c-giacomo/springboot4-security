@@ -1,1 +1,1 @@
-jwt-auth: JWT + UserDetailService: Login with Username & Password (Encripted) and access with oauth2.Jwt token with public and private keys
+<b>jwt-auth</b>: <span style="font-family: Calibri; font-size: small;">JWT + UserDetailService: Login with Username & Password (Encrypted) and access with oauth2.Jwt token with public and private keys</span>

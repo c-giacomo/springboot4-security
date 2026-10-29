@@ -10,7 +10,7 @@
     </parent>
     <groupId>it.auth.jwt</groupId>
     <artifactId>jwt-auth</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>jwt-auth</name>
     <description>jwt-auth</description>
     <packaging>jar</packaging>
